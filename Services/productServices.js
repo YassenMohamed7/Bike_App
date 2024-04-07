@@ -3,7 +3,7 @@ const asyncHandler = require('express-async-handler');
 const { Timestamp } = require('firebase-admin/firestore');
 
 
-// get all products 
+// get all products
 // route: GET api/v1/products
 // access: private
 
