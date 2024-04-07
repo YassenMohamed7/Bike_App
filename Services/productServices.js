@@ -7,6 +7,7 @@ const { Timestamp } = require('firebase-admin/firestore');
 // route: GET api/v1/products
 // access: private
 
+
 exports.getProducts = asyncHandler(async (req, res) => {
     const snapshot = await products.get();   // it returns a snapshot of the collection
     // docs is a list of objects each object is a document.
