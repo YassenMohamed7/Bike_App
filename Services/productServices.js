@@ -71,13 +71,14 @@ exports.addProduct = asyncHandler(async (req, res) => {
         Distance: provided_data.distance,// measured in km 
         Speed: provided_data.speed,
         Brand: provided_data.brand,
-        status: provided_data.status
+        status: true    // status is true when adding the category for the first time
+                        // And it turns to false when deleting the category.
     }
     console.log(data)
-
     await products.doc(`${provided_data.id}`).create({data});
     res.redirect('/api/v1/products');
 })
+
 
 
 // edit existing product
