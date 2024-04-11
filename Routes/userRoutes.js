@@ -6,7 +6,7 @@ const {getUsers} = require('../Services/userServices');
 const router = express.Router();
 
 router.route('/').get(getUsers);
-router.route('/:Customer_Id').get(getSpecificUsers);
+// router.route('/:Customer_Id').get(getSpecificUser);
 
 
 module.exports = router;
