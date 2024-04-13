@@ -2,7 +2,7 @@ const db = require("../Config/connection");
 
 
 
-const categories = db.collection("categories");
+const categories = db.collection("Categories");
 
 
 module.exports = categories;
