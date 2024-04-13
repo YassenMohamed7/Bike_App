@@ -78,8 +78,7 @@ exports.addProduct = asyncHandler(async (req, res) => {
         Brand: provided_data.Brand,
         Status: provided_data.Status  // true at first and false when removing the product
     }
-    console.log(data)
-    await products.doc(`${provided_data.Vehicle_Id}`).create({data});
+    await products.doc(`${provided_data.Vehicle_Id}`).create(data);
     res.redirect('/api/v1/products');
 })
 
