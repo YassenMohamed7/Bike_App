@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const productRoutes = require('./Routes/productRoutes');
 const categoryRoutes = require('./Routes/categoryRoutes');
 const userRoutes = require('./Routes/userRoutes');
+const paymentRoutes = require('./Routes/paymentRoutes');
 
 const apiError = require('./Utils/apiError')
 const globalError = require('./Middlewares/errorMiddleware');
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/payments', paymentRoutes);
 
 // handling undefined routes
 app.all('*', (req, res, next) => {
