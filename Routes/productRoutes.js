@@ -1,14 +1,16 @@
 const express = require('express');
 const { getProducts,
     addProduct, 
-    getSpecificProduct} = require('../Services/productServices');
+    getSpecificProduct, editProduct
+} = require('../Services/productServices');
 // required Services
 
 
 const router = express.Router();
 
-router.route('/').post(addProduct);
-router.route('/').get(getProducts).post(addProduct);
-router.route('/:id').get(getSpecificProduct);
+router.route('/addProduct').post(addProduct);
+router.route('/getAllProducts').get(getProducts);
+router.route('/getSpecificProduct/:id').get(getSpecificProduct);
+router.route('/edit/:id').put(editProduct);
 
 module.exports = router;

@@ -26,7 +26,6 @@ exports.addCategory = asyncHandler(async (req, res) => {
 // access: private
 
 exports.getCategories = asyncHandler(async (req, res) => {
-
     const snapshot = await categories.get();
     const docs = snapshot.docs.map(doc => doc.data());
     res.status(200).json(docs);
