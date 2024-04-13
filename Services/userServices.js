@@ -13,19 +13,16 @@ exports.getUsers = asyncHandler(async (req, res) => {
     const data = [];
 
     snapshot.forEach((doc) =>{
-        const { First_Name = {}, Balance, Active, Orders = 0 } = doc.data() || {};
+        const { First_Name = {},Last_Name = {}, Balance, Active, Orders = 0 } = doc.data() || {};
         const FirstName = First_Name["First Name"];
+        const LastName = Last_Name["Last_Name"];
 
         const LastElementOfFirstName = FirstName[FirstName.length - 1];
-        data.push({LastElementOfFirstName, Balance, Active, Orders});
+        const LastElementOfLastName = LastName[LastName.length - 1];
+        data.push({LastElementOfFirstName, LastElementOfLastName, Balance, Active, Orders});
     })
     res.status(200).json(data);
 })
-
-
-
-
-
 
 
 
