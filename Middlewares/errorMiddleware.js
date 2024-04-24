@@ -1,6 +1,6 @@
 
-
-const globalError = (err, req, res) => {
+// globalError must include the next parameter to be an error handling function
+const globalError = (err, req, res, next) => {
     err.status = err.status || 500;
     err.statusType = err.statusType || "error";
 
@@ -9,7 +9,6 @@ const globalError = (err, req, res) => {
     }else{
             sendToProduction(err, res);
     }
-
 }
 
 
