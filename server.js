@@ -1,14 +1,20 @@
 const express = require('express');
+const apiError = require('./Utils/apiError');
+const globalError = require('./Middlewares/errorMiddleware');
+
+
 const dotenv = require('dotenv');
+dotenv.config({path: './Config/config.env'});
+
 
 const productRoutes = require('./Routes/productRoutes');
 const categoryRoutes = require('./Routes/categoryRoutes');
 const userRoutes = require('./Routes/userRoutes');
 const paymentRoutes = require('./Routes/paymentRoutes');
 
-const apiError = require('./Utils/apiError')
-const globalError = require('./Middlewares/errorMiddleware');
-dotenv.config({path: './Config/config.env'});
+
+
+
 const app = express();
 app.use(express.json());
 
@@ -24,12 +30,22 @@ app.all('*', (req, res, next) => {
     next(new apiError(`this route ${req.originalUrl} is not defined`));
 })
 
-
 // Global error handling middleware
-
+// 4-parameters function to handle global errors
 app.use(globalError);
 
+
 const PORT = process.env.PORT || 8080
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log('app is running on port ', PORT);
 })
+
+// Handle errors outside express
+process.on("unhandledRejection", (err)=>{
+    console.error(`Unhandled Rejection: ${err.name} | ${err.message}`);
+//     close the server after handling the pending requests
+    server.close(()=>{
+        console.error(`Shutting down...`);
+        process.exit(1);
+    });
+});
