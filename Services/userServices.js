@@ -39,7 +39,6 @@ exports.getUsers = asyncHandler(async (req, res) => {
 
 exports.getSpecificUser = asyncHandler(async (req, res, next) =>{
     const Customer_Id = req.params.Customer_Id;
-    console.log(Customer_Id);
     try{
         const docRef = users.doc(Customer_Id);
         const snapshot = await docRef.get();
