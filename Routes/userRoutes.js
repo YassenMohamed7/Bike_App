@@ -1,12 +1,12 @@
 const express = require('express');
-const {getUsers} = require('../Services/userServices');
+const {getUsers, getSpecificUser} = require('../Services/userServices');
 // required Services
 
 
 const router = express.Router();
 
 router.route('/').get(getUsers);
-// router.route('/:Customer_Id').get(getSpecificUser);
+router.route('/getSpecificUser/:Customer_Id').get(getSpecificUser);
 
 
 module.exports = router;
