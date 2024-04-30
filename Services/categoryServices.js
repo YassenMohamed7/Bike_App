@@ -38,9 +38,6 @@ exports.uploadCategoryImage = upload.single('image');
 exports.addCategory = asyncHandler(async (req, res, next) => {
     const provided_data = req.body;
     const file = req.file;
-    console.log(provided_data);
-    console.log(file);
-
     // generate image name
     const ext = file.mimetype.split('/')[1];
     const imageName = `category/${Date.now()}.${ext}`;

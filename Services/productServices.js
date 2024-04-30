@@ -2,47 +2,58 @@ const products = require('../Models/products');
 const asyncHandler = require('express-async-handler');
 const { Timestamp } = require('firebase-admin/firestore');
 const apiError = require('../Utils/apiError');
+const multer = require('multer');
+const uploadImage = require('../Utils/uploadImageToBucket');
+const {bucket} = require("../Config/connection");
 
 
-// get all products
-// route: GET api/v1/products
-// access: private
 
-
-exports.getProducts = asyncHandler(async (req, res) => {
-    const snapshot = await products.get();   // it returns a snapshot of the collection
-    // docs is a list of objects each object is a document.
-    const docs = snapshot.docs.map(doc => doc.data());
-    res.status(200).json(docs);
-})
-
-
-// get specific product 
-// route: GET api/v1/products/:id
-// access: private
-
-exports.getSpecificProduct = asyncHandler(async (req, res, next) => {
-    const docId = req.params.id;
-    try{
-        const docRef = products.doc(docId);
-        const snapshot = await docRef.get();
-        if (snapshot.exists)
-        {
-            res.status(200).json(snapshot.data());
-        }else {
-            next(new apiError(`document with ${docId} is not exists`, 404));
-        }
-    } catch (err) {
-        next(new apiError("internal server error", 500));
-    }
-})
-
-// add new product 
+// add new product
 // route: POST api/v1/products
 // access: private
 
-exports.addProduct = asyncHandler(async (req, res) => {
+// @desc configuring multer for uploading single image
+const multerStorage = multer.memoryStorage({
+    destination: function (req, file, cb) {
+        // no local storage, upload directly to Firebase bucket.
+        cb(null, '');
+    },
+    filename: function (req, file, cb) {
+        // mimetype is file_type/extension
+        const ext = file.mimetype.split('/')[1];
+        const filename = `${Date.now()}.${ext}`;
+        cb(null, filename);
+    },
+});
+const multerFilter = (req, file, cb) => {
+    const type = file.mimetype.split('/')[0];
+    if(type === 'image'){
+        cb(null, true);
+    }else{
+        cb(new apiError("Only images are allowed", 400), false);
+    }
+}
+const upload = multer({storage: multerStorage,
+    fileFilter: multerFilter});
+
+exports.uploadProductImage = upload.single('Vehicle_Image');
+
+
+
+
+exports.addProduct = asyncHandler(async (req, res, next) => {
     const provided_data = req.body;
+    const file = req.file;
+    let imageUrl = null;
+    uploadImage(file, (err, _imageUrl) =>{
+        if(err){
+            next(new apiError("Error Uploading Image", 500));
+        }else{
+            console.log("Image is: ", _imageUrl);
+            imageUrl = _imageUrl;
+        }
+    });
+
     const data = {
         Last_Modification:{
             Timestamp: Timestamp.now(),
@@ -51,7 +62,7 @@ exports.addProduct = asyncHandler(async (req, res) => {
         Vehicle_Id: provided_data.Vehicle_Id,
         Vehicle_Name: provided_data.Vehicle_Name,
         Vehicle_Description: provided_data.Vehicle_Description,
-        Vehicle_Image: provided_data.Vehicle_Image,
+        Vehicle_Image: imageUrl,
         Vehicle_Type: provided_data.Vehicle_Type,
         Vehicle_Category: provided_data.Vehicle_Category,// Category Id
         Register_Date: Timestamp.now(),
@@ -79,7 +90,43 @@ exports.addProduct = asyncHandler(async (req, res) => {
         Status: provided_data.Status  // true at first and false when removing the product
     }
     await products.doc(`${provided_data.Vehicle_Id}`).create(data);
-    res.redirect('/api/v1/products');
+    res.redirect('/api/v1/products/getAllProducts');
+})
+
+
+
+
+
+// get all products
+// route: GET api/v1/products
+// access: private
+
+exports.getProducts = asyncHandler(async (req, res) => {
+    const snapshot = await products.get();   // it returns a snapshot of the collection
+    // docs is a list of objects each object is a document.
+    const docs = snapshot.docs.map(doc => doc.data());
+    res.status(200).json(docs);
+})
+
+
+// get specific product 
+// route: GET api/v1/products/:id
+// access: private
+
+exports.getSpecificProduct = asyncHandler(async (req, res, next) => {
+    const docId = req.params.id;
+    try{
+        const docRef = products.doc(docId);
+        const snapshot = await docRef.get();
+        if (snapshot.exists)
+        {
+            res.status(200).json(snapshot.data());
+        }else {
+            next(new apiError(`document with ${docId} is not exists`, 404));
+        }
+    } catch (err) {
+        next(new apiError("internal server error", 500));
+    }
 })
 
 

@@ -8,11 +8,9 @@ const {
 const router = express.Router();
 
 
-
-
 router.route('/getCategories').get(getCategories);
 
 
-router.post('/addCategory', uploadCategoryImage, addCategory);
+router.route('/addCategory').post(uploadCategoryImage, addCategory);
 
 module.exports = router;
