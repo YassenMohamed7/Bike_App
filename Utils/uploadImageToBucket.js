@@ -2,7 +2,8 @@ const apiError = require("./apiError");
 const {bucket} = require("../Config/connection");
 
 
-const uploadImageToBucket = (file, callback) => {
+
+const uploadImageToBucket =(file, callback) => {
     const ext = file.mimetype.split('/')[1];
     const imageName = `category/${Date.now()}.${ext}`;
     const imageFile = bucket.file(imageName);

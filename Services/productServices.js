@@ -4,55 +4,15 @@ const { Timestamp } = require('firebase-admin/firestore');
 const apiError = require('../Utils/apiError');
 const multer = require('multer');
 const uploadImage = require('../Utils/uploadImageToBucket');
-const {bucket} = require("../Config/connection");
-
 
 
 // add new product
 // route: POST api/v1/products
 // access: private
 
-// @desc configuring multer for uploading single image
-const multerStorage = multer.memoryStorage({
-    destination: function (req, file, cb) {
-        // no local storage, upload directly to Firebase bucket.
-        cb(null, '');
-    },
-    filename: function (req, file, cb) {
-        // mimetype is file_type/extension
-        const ext = file.mimetype.split('/')[1];
-        const filename = `${Date.now()}.${ext}`;
-        cb(null, filename);
-    },
-});
-const multerFilter = (req, file, cb) => {
-    const type = file.mimetype.split('/')[0];
-    if(type === 'image'){
-        cb(null, true);
-    }else{
-        cb(new apiError("Only images are allowed", 400), false);
-    }
-}
-const upload = multer({storage: multerStorage,
-    fileFilter: multerFilter});
-
-exports.uploadProductImage = upload.single('Vehicle_Image');
-
-
-
-
 exports.addProduct = asyncHandler(async (req, res, next) => {
     const provided_data = req.body;
     const file = req.file;
-    let imageUrl = null;
-    uploadImage(file, (err, _imageUrl) =>{
-        if(err){
-            next(new apiError("Error Uploading Image", 500));
-        }else{
-            console.log("Image is: ", _imageUrl);
-            imageUrl = _imageUrl;
-        }
-    });
 
     const data = {
         Last_Modification:{
@@ -62,7 +22,7 @@ exports.addProduct = asyncHandler(async (req, res, next) => {
         Vehicle_Id: provided_data.Vehicle_Id,
         Vehicle_Name: provided_data.Vehicle_Name,
         Vehicle_Description: provided_data.Vehicle_Description,
-        Vehicle_Image: imageUrl,
+        Vehicle_Image: null,
         Vehicle_Type: provided_data.Vehicle_Type,
         Vehicle_Category: provided_data.Vehicle_Category,// Category Id
         Register_Date: Timestamp.now(),
@@ -89,8 +49,18 @@ exports.addProduct = asyncHandler(async (req, res, next) => {
         Brand: provided_data.Brand,
         Status: provided_data.Status  // true at first and false when removing the product
     }
-    await products.doc(`${provided_data.Vehicle_Id}`).create(data);
-    res.redirect('/api/v1/products/getAllProducts');
+
+    uploadImage(file, async (err, _imageUrl) => {
+        if (err) {
+            next(new apiError("Error Uploading Image", 500));
+        } else {
+            console.log("Image is: ", _imageUrl);
+            data.Vehicle_Image = _imageUrl;
+            await products.doc(`${provided_data.Vehicle_Id}`).create(data);
+        }
+    });
+
+    res.status(200).json(`product is added successfully.`);
 })
 
 
