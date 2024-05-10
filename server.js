@@ -11,6 +11,7 @@ const productRoutes = require('./Routes/productRoutes');
 const categoryRoutes = require('./Routes/categoryRoutes');
 const userRoutes = require('./Routes/userRoutes');
 const paymentRoutes = require('./Routes/paymentRoutes');
+const stockRoutes = require('./Routes/stockRoutes');
 
 
   
@@ -24,6 +25,8 @@ app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/payments', paymentRoutes);
+app.use('/api/v1/stock', stockRoutes);
+
 
 // handling undefined routes
 app.all('*', (req, res, next) => {
