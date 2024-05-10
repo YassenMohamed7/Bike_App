@@ -1,6 +1,5 @@
 const express = require('express');
 const {
-    uploadCategoryImage,
     addCategory,
     getCategories} = require("../Services/categoryServices");
 
