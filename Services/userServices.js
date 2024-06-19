@@ -2,6 +2,8 @@ const users = require('../Models/users');
 const asyncHandler = require('express-async-handler');
 const products = require("../Models/products");
 const apiError = require("../Utils/apiError");
+const { Timestamp } = require('firebase-admin/firestore');
+const calculateDateDiff = require('../Utils/calculateDateDiff');
 
 
 // get all Users data
@@ -53,3 +55,28 @@ exports.getSpecificUser = asyncHandler(async (req, res, next) =>{
     }
 })
 
+
+
+exports.getTotal = asyncHandler(async (req, res, next)=>{
+    const usersSnapshot = await users.get();
+    const totalUsers = usersSnapshot.size;
+    res.json({ totalUsers });
+})
+
+
+
+exports.getUserStatus = asyncHandler(async (req, res, next) => {
+    const period = req.body.period; // period should be in days.
+
+    console.log("period is ", period);
+
+    const usersSnapshot = await users.get();
+    const usersData = usersSnapshot.docs.map(doc => doc.data());
+    const stats = {
+        active: usersData.filter(usersData => usersData.Active === true).length,
+        new: usersData.filter(usersData => calculateDateDiff(Timestamp.now(), usersData.First_Login) <= period).length,
+        inactive: usersData.filter(usersData => usersData.Active === false).length,
+        deleted: usersData.filter(usersData => usersData.Delete_Account === true).length,
+    };
+    res.json(stats);
+})
