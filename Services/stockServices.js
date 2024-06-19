@@ -7,8 +7,6 @@ const uploadImage = require('../Utils/uploadImageToBucket');
 
 
 
-
-
 // add new product to stock
 // route: POST api/v1/stock/addProduct
 // access: private
