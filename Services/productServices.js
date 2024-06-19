@@ -2,7 +2,6 @@ const products = require('../Models/products');
 const asyncHandler = require('express-async-handler');
 const { Timestamp } = require('firebase-admin/firestore');
 const apiError = require('../Utils/apiError');
-const multer = require('multer');
 const uploadImage = require('../Utils/uploadImageToBucket');
 
 

@@ -51,7 +51,7 @@ exports.getOrders = asyncHandler(async (req, res, next) => {
 
 
 //
-// exports.getWeeklyOreders = asyncHandler(async (req, res) => {
+// exports.getWeeklyOrders = asyncHandler(async (req, res) => {
 //     const now = FirebaseFirestore.Timestamp.now();
 //     const nowMillis = now.toMillis();
 //     const sixDaysAgoMillis = nowMillis - (6 * 24 * 60 * 60 * 1000);
@@ -65,8 +65,8 @@ exports.getOrders = asyncHandler(async (req, res, next) => {
 //         const users = new Set();
 //         const totalRents = snapshot.docs.length;
 //         snapshot.forEach((doc) => {
-//             const orederId = doc.Customer_Id;
-//             users.add(orederId);
+//             const orderId = doc.Customer_Id;
+//             users.add(orderId);
 //         });
 //     }))
 //
