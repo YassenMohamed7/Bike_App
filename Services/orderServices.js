@@ -4,13 +4,33 @@ const vehicle = require("../Models/vehicleProfile");
 const users = require("../Models/users");
 const apiError = require("../Utils/apiError");
 
-
+// get total orders of specific user
+// route: GET api/v1/orders/getOrders
+// access: private
+// passing page and customerId in the request body
 exports.getOrders = asyncHandler(async (req, res, next) => {
-    const page = parseInt(req.params.page) || 1; // Ensure page is a number (default 1)
+    const page = parseInt(req.body.page) || 1; // Ensure page is a number (default 1)
+    const customerId = req.body.customerId;
     const limit = 10;
-    const startIndex = (page - 1) * limit;
+
+    let query = booking
+        .where('Customer_Id', '==', customerId)
+        .orderBy('Booking_Date')
+        .limit(limit);
+
+    // If it's not the first page, get the last document from the previous page
+    if (page > 1) {
+        const lastVisibleQuery = await booking
+            .where('Customer_Id', '==', customerId)
+            .orderBy('Booking_Date')
+            .limit((page - 1) * limit)
+            .get();
+
+        const lastVisible = lastVisibleQuery.docs[lastVisibleQuery.docs.length - 1];
+        query = query.startAfter(lastVisible);
+    }
+
     try {
-        const query = booking.orderBy('Booking_Date').startAt(startIndex).limit(limit);
         const snapshot = await query.get();
 
         const orders = await Promise.all(snapshot.docs.map(async (doc) => {
@@ -50,24 +70,19 @@ exports.getOrders = asyncHandler(async (req, res, next) => {
 
 
 
-//
-// exports.getWeeklyOrders = asyncHandler(async (req, res) => {
-//     const now = FirebaseFirestore.Timestamp.now();
-//     const nowMillis = now.toMillis();
-//     const sixDaysAgoMillis = nowMillis - (6 * 24 * 60 * 60 * 1000);
-//     const sixDaysAgoTimestamp = new FirebaseFirestore.Timestamp(sixDaysAgoMillis);
-//     const query = orders.where('date', ">=", sixDaysAgoTimestamp);
-//     query.get().then((snapshot => {
-//         if (snapshot.empty) {
-//             // there is no orders this week.
-//             return;
-//         }
-//         const users = new Set();
-//         const totalRents = snapshot.docs.length;
-//         snapshot.forEach((doc) => {
-//             const orderId = doc.Customer_Id;
-//             users.add(orderId);
-//         });
-//     }))
-//
-// })
+// passing customerId in the request body
+exports.getTotalOrders = asyncHandler(async (req, res, next) => {
+    const customerId = req.body.customerId;
+
+    try {
+        // Query to count total orders for a specific customer
+        const snapshot = await booking.where('Customer_Id', '==', customerId).get();
+
+        // Count the number of documents in the snapshot
+        const totalOrders = snapshot.size;
+
+        res.status(200).json({ totalOrders });
+    } catch (err) {
+        next(err);
+    }
+});
