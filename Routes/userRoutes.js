@@ -3,13 +3,14 @@ const {
     getUsers,
     getSpecificUser,
     getTotal,
-    getUserStatus
+    getUserStatus,
+    getGender
 } = require('../Services/userServices');
 
 
 const router = express.Router();
 
-router.route('/').get(getUsers);
+router.route('/:page').get(getUsers);
 
 
 // @used in overview to display num of total users
@@ -21,8 +22,8 @@ router.route('/totalUsers').get(getTotal);
 router.route('/getUserStatus').get(getUserStatus);
 
 
-
 router.route('/getSpecificUser/:Customer_Id').get(getSpecificUser);
+router.route('/getGenderOfAllUsers').get(getGender);
 
 
 module.exports = router;
