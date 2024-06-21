@@ -13,6 +13,8 @@ const userRoutes = require('./Routes/userRoutes');
 const paymentRoutes = require('./Routes/paymentRoutes');
 const stockRoutes = require('./Routes/stockRoutes');
 const orderRoutes = require('./Routes/orderRoutes');
+const reviewRoutes = require('./Routes/reviewRoutes');
+
 
 
   
@@ -28,6 +30,8 @@ app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/payments', paymentRoutes);
 app.use('/api/v1/stock', stockRoutes);
 app.use('/api/v1/orders', orderRoutes);
+app.use('/api/v1/reviews', reviewRoutes);
+
 
 
 // handling undefined routes
