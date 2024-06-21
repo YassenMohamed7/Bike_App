@@ -165,12 +165,31 @@ exports.editProduct = asyncHandler(async (req, res, next) => {
                     };
 
                 await docRef.update(productData);
-                res.redirect('/api/v1/products/getAllProducts');
+                res.status(200).json('product is updated successfully!');
 
             }
             catch (e) {
                 next(new apiError("internal server error", 500));
             }
+})
+
+
+exports.getTotalNumber = asyncHandler(async (req, res) => {
+    const productsSnapshot = await products.get();
+    const totalProducts = productsSnapshot.size;
+    res.json({ totalProducts });
+})
+
+exports.getStatus = asyncHandler(async (req, res, next) => {
+    const productsSnapshot = await products.get();
+    const allProducts = productsSnapshot.docs.map(doc => doc.data());
+    const stats = {
+        newBikes: allProducts.filter(product => product.Vehicle_Type === 'bike' && product.status === 'new').length,
+        newScooters: allProducts.filter(product => product.Vehicle_Type === 'scooter' && product.status === 'new').length,
+        expiredBikes: allProducts.filter(product => product.Vehicle_Type === 'bike' && product.status === 'expired').length,
+        expiredScooters: allProducts.filter(product => product.Vehicle_Type === 'scooter' && product.status === 'expired').length,
+    };
+    res.json(stats);
 })
 
 
