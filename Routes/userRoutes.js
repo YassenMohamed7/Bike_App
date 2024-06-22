@@ -10,7 +10,7 @@ const {
 
 const router = express.Router();
 
-router.route('/:page').get(getUsers);
+router.route('/').get(getUsers);
 
 
 // @used in overview to display num of total users
