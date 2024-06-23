@@ -79,7 +79,7 @@ exports.getProducts = asyncHandler(async (req, res) => {
 
 
 // get specific product 
-// route: GET api/v1/products/:id
+// route: GET api/v1/getSpecificProduct/:id
 // access: private
 
 exports.getSpecificProduct = asyncHandler(async (req, res, next) => {
@@ -174,11 +174,21 @@ exports.editProduct = asyncHandler(async (req, res, next) => {
 })
 
 
+// get total number of all existing products
+// route: POST api/v1/products/getTotalNumber
+// access: private
+
 exports.getTotalNumber = asyncHandler(async (req, res) => {
     const productsSnapshot = await products.get();
     const totalProducts = productsSnapshot.size;
     res.json({ totalProducts });
 })
+
+
+// get status of existing products
+// route: POST api/v1/products/getStatus
+// access: private
+
 
 exports.getStatus = asyncHandler(async (req, res, next) => {
     const productsSnapshot = await products.get();

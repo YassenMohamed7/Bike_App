@@ -18,6 +18,6 @@ router.route('/getAllProducts').get(getProducts);
 router.route('/getSpecificProduct/:id').get(getSpecificProduct);
 router.route('/edit/:id').put(uploadImage, editProduct);
 router.route('/getStatus').get(getStatus);
-router.route('/getProductsNum').get(getTotalNumber);
+router.route('/getTotalNumber').get(getTotalNumber);
 
 module.exports = router;
