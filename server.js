@@ -1,7 +1,7 @@
 const express = require('express');
 const apiError = require('./Utils/apiError');
 const globalError = require('./Middlewares/errorMiddleware');
-
+const decodeToken = require('./Middlewares/decodeToken');
 
 const dotenv = require('dotenv');
 dotenv.config({path: './Config/config.env'});
@@ -14,6 +14,8 @@ const paymentRoutes = require('./Routes/paymentRoutes');
 const stockRoutes = require('./Routes/stockRoutes');
 const orderRoutes = require('./Routes/orderRoutes');
 const reviewRoutes = require('./Routes/reviewRoutes');
+const employeeRoutes = require('./Routes/employeeRoutes');
+
 
 
 
@@ -21,7 +23,7 @@ const reviewRoutes = require('./Routes/reviewRoutes');
 
 const app = express();
 app.use(express.json());
-
+// app.use(decodeToken);   // stop until integration with frontend ans passing tokens.
 
 // Mount Routes
 app.use('/api/v1/products', productRoutes);
@@ -31,6 +33,7 @@ app.use('/api/v1/payments', paymentRoutes);
 app.use('/api/v1/stock', stockRoutes);
 app.use('/api/v1/orders', orderRoutes);
 app.use('/api/v1/reviews', reviewRoutes);
+app.use('/api/v1/employees', employeeRoutes);
 
 
 
