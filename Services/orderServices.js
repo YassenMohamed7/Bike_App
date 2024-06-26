@@ -35,7 +35,7 @@ exports.getOrders = asyncHandler(async (req, res, next) => {
 
         const orders = await Promise.all(snapshot.docs.map(async (doc) => {
             const orderData = doc.data() || {};
-            const { Booking_Id, Customer_Id, Start_Date, End_Date, Total_Amount, Status, Vehicle_Id } = orderData;
+            const { Booking_Id, Customer_Id, Payment_Id, Start_Date, End_Date, Total_Amount, Status, Vehicle_Id, Vehicle_Type} = orderData;
 
             // Fetch vehicle and user data concurrently
             const [vehicleSnapshot, userSnapshot] = await Promise.all([
@@ -59,7 +59,7 @@ exports.getOrders = asyncHandler(async (req, res, next) => {
                 throw new apiError(`Customer with ID: ${Customer_Id} not found`, 404);
             }
 
-            return { Booking_Id, Customer_Name, Product_Name, Start_Date, End_Date, Total_Amount, Status };
+            return { Booking_Id, Customer_Name, Payment_Id, Product_Name, Start_Date, End_Date, Total_Amount, Status, Vehicle_Type };
         }));
 
         res.status(200).json(orders);
@@ -86,3 +86,46 @@ exports.getTotalOrders = asyncHandler(async (req, res, next) => {
         next(err);
     }
 });
+
+
+
+exports.getProductType = asyncHandler(async (req, res) =>{
+    const snapshot = await booking.get();
+    const BookingData = snapshot.docs.map(doc => doc.data().Vehicle_Type);
+    console.log(BookingData);
+
+    const data = {
+        bike : BookingData.filter(Vehicle_Type => Vehicle_Type === 0).length,
+        scooter : BookingData.filter(Vehicle_Type => Vehicle_Type === 1).length
+    }
+    res.status(200).json(data);
+})
+
+
+exports.mostPreferredRental = asyncHandler(async (req, res) =>{
+    const snapshot = await booking.get();
+    const BookingData = snapshot.docs.map(doc => doc.data().Vehicle_Name);
+    const vehicleCount ={};
+    BookingData.forEach(vehicleName =>{
+        if(vehicleCount[vehicleName])
+            vehicleCount[vehicleName]++;
+        else
+            vehicleCount[vehicleName] = 1;
+    })
+
+    const vehicleEntries = Object.entries(vehicleCount);
+    let topVehicles;
+    if(vehicleEntries.length < 4){
+        topVehicles = vehicleEntries.map(vehicle => ({name: vehicle[0], count: vehicle[1]}))
+    }else{
+        topVehicles = vehicleEntries
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 4)
+            .map(vehicle => ({name: vehicle[0], count: vehicle[1]}));
+    }
+
+    console.log(topVehicles);
+    res.status(200).json(topVehicles);
+
+
+})
