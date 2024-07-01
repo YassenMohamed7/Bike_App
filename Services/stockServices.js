@@ -36,13 +36,13 @@ exports.addProduct = asyncHandler(async (req, res, next) => {
         if (err) {
             next(new apiError("Error Uploading Image", 500));
         } else {
-            console.log("Image is: ", _imageUrl);
             data.Product_Image = _imageUrl;
             await stock.doc(`${provided_data.Product_ID}`).create(data);
         }
     });
 
-    res.redirect(`/api/v1/stock/getAllProducts`);
+    res.status(200).json('product is added succesfully');
+
 })
 
 
@@ -91,7 +91,6 @@ exports.getSpecificProduct = asyncHandler(async (req, res, next) => {
 })
 
 
-
 // edit existing product
 // route: POST api/v1/stock/edit/:id
 // access: private
@@ -101,7 +100,6 @@ exports.getSpecificProduct = asyncHandler(async (req, res, next) => {
 exports.editProduct = asyncHandler(async (req, res, next) => {
     const provided_data = req.body;
     const file = req.file;
-
     const data = {
         Product_ID: provided_data.Product_ID,
         Product_Name: provided_data.Product_Name,
@@ -124,23 +122,24 @@ exports.editProduct = asyncHandler(async (req, res, next) => {
         if (err) {
             next(new apiError("Error Uploading Image", 500));
         } else {
-            console.log("Image is: ", _imageUrl);
+
             data.Product_Image = _imageUrl;
             await stock.doc(`${provided_data.Product_ID}`).update(data);
         }
     });
 
-    res.redirect(`/api/v1/stock/getSpecificProduct/:${data.Product_ID}`);
+    res.status(200).json("data is updated successfully");
 
 })
 
 
 
 exports.deleteProduct = asyncHandler(async (req, res, next) =>{
-    const docID = req.body.id;
+    const docID = req.params.id;
+    console.log("ID is: ", docID);
     const docRef = stock.doc(docID);
     docRef.delete().then(() =>{
-        res.redirect(`/api/v1/stock/getSpecificProduct/:${data.Product_ID}`);
+        res.status(204).json("product is deleted successfully");
     }).catch((err) =>{
        next(new apiError(`Error Deleting the product}`, 500));
     });

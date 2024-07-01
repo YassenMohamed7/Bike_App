@@ -3,6 +3,7 @@ const { getProducts,
     addProduct,
     getSpecificProduct,
     editProduct,
+    deleteProduct
 } = require('../Services/stockServices');
 
 const {uploadImage} = require('../Utils/uploadImage');
@@ -11,8 +12,9 @@ const {uploadImage} = require('../Utils/uploadImage');
 const router = express.Router();
 
 router.route('/addProduct').post(uploadImage,addProduct);
-router.route('/getAllProducts').get(getProducts);
+router.route('/getProducts/:page').get(getProducts);
 router.route('/getSpecificProduct/:id').get(getSpecificProduct);
-router.route('/edit/:id').put(uploadImage, editProduct);
+router.route('/editProduct').put(uploadImage, editProduct);
+router.route('/delete/:id').delete(deleteProduct);
 
 module.exports = router;
