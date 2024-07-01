@@ -139,7 +139,7 @@ exports.deleteProduct = asyncHandler(async (req, res, next) =>{
     console.log("ID is: ", docID);
     const docRef = stock.doc(docID);
     docRef.delete().then(() =>{
-        res.status(204).json("product is deleted successfully");
+        res.status(202).json("product is deleted successfully");
     }).catch((err) =>{
        next(new apiError(`Error Deleting the product}`, 500));
     });

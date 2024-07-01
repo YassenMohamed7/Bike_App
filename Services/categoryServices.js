@@ -29,7 +29,7 @@ exports.addCategory = asyncHandler(async (req, res, next) => {
         }
     });
 
-    res.redirect('/api/v1/categories/getCategories');
+    res.status(201).json("category is added successfully");
 
 })
 
