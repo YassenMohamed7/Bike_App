@@ -15,6 +15,6 @@ router.route('/addProduct').post(uploadImage,addProduct);
 router.route('/getProducts/:page').get(getProducts);
 router.route('/getSpecificProduct/:id').get(getSpecificProduct);
 router.route('/editProduct').put(uploadImage, editProduct);
-router.route('/delete/:id').delete(deleteProduct);
+router.route('/deleteProduct/:id').delete(deleteProduct);
 
 module.exports = router;
