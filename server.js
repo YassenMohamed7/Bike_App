@@ -23,7 +23,7 @@ const employeeRoutes = require('./Routes/employeeRoutes');
 
 const app = express();
 app.use(express.json());
-// app.use(decodeToken);   // stop until integration with frontend ans passing tokens.
+// app.use(decodeToken);   // stop until integration with frontend and passing tokens.
 
 // Mount Routes
 app.use('/api/v1/products', productRoutes);

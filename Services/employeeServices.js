@@ -24,17 +24,21 @@ exports.addEmployee = asyncHandler(async (req, res, next) => {
         Inprogress_Services: 0,
         Image: null
     };
+    if(file) {
+        uploadImage(file, async (err, _imageUrl) => {
+            if (err) {
+                next(new apiError("Error Uploading Image", 500));
+            } else {
+                data.Image = _imageUrl;
 
-    uploadImage(file, async (err, _imageUrl) => {
-        if (err) {
-            next(new apiError("Error Uploading Image", 500));
-        } else {
-            data.Image = _imageUrl;
-
-            await newDocRef.set(data);
-            res.status(200).json(`Employee is added successfully.`);
-        }
-    });
+                await newDocRef.set(data);
+                res.status(200).json(`Employee is added successfully.`);
+            }
+        });
+    }else {
+        await newDocRef.set(data);
+        res.status(200).json(`Employee is added successfully.`);
+    }
 });
 
 
