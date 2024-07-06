@@ -6,7 +6,7 @@ const decodeToken = require('./Middlewares/decodeToken');
 const dotenv = require('dotenv');
 dotenv.config({path: './Config/config.env'});
 
-
+const authRoutes = require('./Routes/authRoutes');
 const productRoutes = require('./Routes/productRoutes');
 const categoryRoutes = require('./Routes/categoryRoutes');
 const userRoutes = require('./Routes/userRoutes');
@@ -26,6 +26,7 @@ app.use(express.json());
 // app.use(decodeToken);   // stop until integration with frontend and passing tokens.
 
 // Mount Routes
+app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/users', userRoutes);
