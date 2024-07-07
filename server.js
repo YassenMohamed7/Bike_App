@@ -23,7 +23,7 @@ const employeeRoutes = require('./Routes/employeeRoutes');
 
 const app = express();
 app.use(express.json());
-// app.use(decodeToken);   // stop until integration with frontend and passing tokens.
+app.use(decodeToken);   // passing the token in the request headers as authorization: token_value
 
 // Mount Routes
 app.use('/api/v1/auth', authRoutes);

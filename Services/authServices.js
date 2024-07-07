@@ -1,11 +1,12 @@
-const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
 
 const apiError = require("../Utils/apiError");
 const employees = require('../Models/employees');
 const uploadImage = require("../Utils/uploadImageToBucket");
 const { auth } = require('../Config/firebaseClient');
-const { createUserWithEmailAndPassword, signInWithEmailAndPassword } = require("firebase/auth");
+const { createUserWithEmailAndPassword,
+        signInWithEmailAndPassword
+    } = require("firebase/auth");
 
 
 
@@ -36,15 +37,12 @@ exports.signup = asyncHandler(async (req, res, next) => {
                 data.Image = _imageUrl;
                 await employees.doc(data.Employee_Id).set(data);
                 res.status(201).json({token : await user.getIdToken(), data});
-
             }
         });
     }else {
         await employees.doc(data.Employee_Id).set(data);
         res.status(201).json({token : await user.getIdToken(), data});
-
     }
-
 });
 
 
@@ -53,7 +51,6 @@ exports.login = asyncHandler(async (req, res, next) => {
     const provided_data = req.body;
 
     try {
-
         const userCredential = await signInWithEmailAndPassword(auth, provided_data.Email, provided_data.Password);
         const user = userCredential.user;
 
@@ -65,5 +62,4 @@ exports.login = asyncHandler(async (req, res, next) => {
         const errorMessage = 'Login failed. Please try again later.';
         next(new apiError(errorMessage, 401));
     }
-
 });
