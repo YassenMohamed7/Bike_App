@@ -28,22 +28,23 @@ exports.signup = asyncHandler(async (req, res, next) => {
         Inprogress_Services: 0,
         Image: null
     };
-    // const token = jwt.sign({userId: data.Employee_Id},
-    //     process.env.JWT_SERCRET_KEY,
-    //     {expiresIn: process.env.JWT_EXPIRE}
-    // );
     if(file) {
         uploadImage(file, async (err, _imageUrl) => {
             if (err) {
                 next(new apiError("Error Uploading Image", 500));
             } else {
                 data.Image = _imageUrl;
+                await employees.doc(data.Employee_Id).set(data);
+                res.status(201).json({token : await user.getIdToken(), data});
+
             }
         });
-    }
-    await employees.doc(data.Employee_Id).set(data);
+    }else {
+        await employees.doc(data.Employee_Id).set(data);
+        res.status(201).json({token : await user.getIdToken(), data});
 
-    res.status(201).json({token : await user.getIdToken(), data});
+    }
+
 });
 
 
