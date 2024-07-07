@@ -5,8 +5,10 @@ const {getAuth} = require("firebase-admin/auth");
 
 
 const decodeToken = (req, res, next) => {
+    if(req.originalUrl.endsWith('login') || req.originalUrl.endsWith('signup')) {
+        return next();
+    }
     const token = req.headers.authorization;
-
     getAuth()
         .verifyIdToken(token)
         .then((decodedToken) => {

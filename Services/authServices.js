@@ -25,8 +25,14 @@ exports.signup = asyncHandler(async (req, res, next) => {
         Phone: provided_data.Phone,
         Email: provided_data.Email,
         Location: provided_data.Location || null,
-        Completed_Services: 0,
-        Inprogress_Services: 0,
+        Completed_Services: {
+            onTime: 0,
+            delayed: 0
+        },
+        In_Progress_Services: {
+            withinDuration: 0,
+            delayed: 0
+        },
         Image: null
     };
     if(file) {
