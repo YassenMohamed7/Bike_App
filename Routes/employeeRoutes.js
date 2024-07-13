@@ -9,8 +9,6 @@ const {uploadImage} = require('../Utils/uploadImage')
 
 const router = express.Router();
 
-//
-// router.route('/addEmployee').post(uploadImage, addEmployee);
-// router.route('/getEmployees/:page').get(getEmployees);
+router.route('/getEmployees/:page').get(getEmployees);
 
 module.exports = router;
