@@ -2,6 +2,7 @@ const express = require('express');
 const apiError = require('./Utils/apiError');
 const globalError = require('./Middlewares/errorMiddleware');
 const decodeToken = require('./Middlewares/decodeToken');
+const cors = require('cors');
 
 const dotenv = require('dotenv');
 dotenv.config({path: './Config/config.env'});
@@ -22,6 +23,7 @@ const employeeRoutes = require('./Routes/employeeRoutes');
   
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 app.use(decodeToken);   // passing the token in the request headers as authorization: token_value
 

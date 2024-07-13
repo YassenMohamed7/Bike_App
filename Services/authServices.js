@@ -5,7 +5,8 @@ const employees = require('../Models/employees');
 const uploadImage = require("../Utils/uploadImageToBucket");
 const { auth } = require('../Config/firebaseClient');
 const { createUserWithEmailAndPassword,
-        signInWithEmailAndPassword
+        signInWithEmailAndPassword,
+        generatePasswordResetLink
     } = require("firebase/auth");
 
 
@@ -69,3 +70,50 @@ exports.login = asyncHandler(async (req, res, next) => {
         next(new apiError(errorMessage, 401));
     }
 });
+
+
+
+exports.resetPassword = asyncHandler(async (req, res, next) =>{
+    const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).send({ error: 'Email is required' });
+    }
+
+    try {
+        const link = await generatePasswordResetLink(email).then(async (link) => {
+            // Send email using your preferred email service provider
+            await sendPasswordResetEmail(email, link);
+            res.status(200).send({message: 'Password reset email sent'});
+
+        })
+    } catch (error) {
+        console.error('Error sending password reset email:', error);
+        res.status(500).send({ error: 'Internal Server Error' });
+    }
+});
+
+
+
+const sendPasswordResetEmail = async (email, link) => {
+    // Use your preferred email service provider to send the email
+    // Example using nodemailer
+    const nodemailer = require('nodemailer');
+    const transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: 'yassenmohammed871@gmail.com',
+            pass: 'Yassen_Mohamed123#'
+        }
+    });
+
+    const mailOptions = {
+        from: 'yassenmohammed871@gmail.com',
+        to: email,
+        subject: 'Password Reset',
+        text: `Click on the following link to reset your password: ${link}`,
+        html: `<p>Click on the following link to reset your password: <a href="${link}">${link}</a></p>`
+    };
+
+    await transporter.sendMail(mailOptions);
+};
