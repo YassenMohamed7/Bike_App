@@ -1,22 +1,33 @@
 const users = require('../Models/users');
 const asyncHandler = require('express-async-handler');
-const products = require("../Models/products");
 const apiError = require("../Utils/apiError");
 const { Timestamp } = require('firebase-admin/firestore');
 const calculateDateDiff = require('../Utils/calculateDateDiff');
 
 
 // get all Users data
-// route: GET api/v1/users
+// route: GET api/v1/users?page=...&active=...
 // access: private
-// Yassin Marie should do the filtering (Active and Blocked) at the client-side
 
 exports.getUsers = asyncHandler(async (req, res) => {
     const data = [];
-    const page = parseInt(req.params.page) || 1;
+    const page = parseInt(req.body.page) || 1;
+    const active = req.body.active;
     const limit = 10;
+    let query;
 
-    let query = users.orderBy('First_Login').limit(limit);
+    console.log("active = "  +  active);
+    console.log("page = "  +  page);
+    if(active === undefined)
+        query  = users.orderBy('First_Login').limit(limit);
+    else if(active === true)
+        query = users
+            .where('Active', '==', true)
+            .limit(limit);
+    else
+        query = users
+            .where('Active', '==', false)
+            .limit(limit);
 
     // If it's not the first page, get the last document from the previous page
     if (page > 1) {
@@ -42,6 +53,8 @@ exports.getUsers = asyncHandler(async (req, res) => {
 
     res.status(200).json(data);
 });
+
+
 
 
 // get specific User data
@@ -71,7 +84,7 @@ exports.getSpecificUser = asyncHandler(async (req, res, next) =>{
 // access: private
 
 
-exports.getTotal = asyncHandler(async (req, res, next)=>{
+exports.getTotal = asyncHandler(async (req, res)=>{
     const usersSnapshot = await users.get();
     const totalUsers = usersSnapshot.size;
     res.json({ totalUsers });
@@ -82,7 +95,7 @@ exports.getTotal = asyncHandler(async (req, res, next)=>{
 // route: GET api/v1/users/getUserStatus
 // access: private
 
-exports.getUserStatus = asyncHandler(async (req, res, next) => {
+exports.getUserStatus = asyncHandler(async (req, res) => {
     const period = req.body.period; // period should be in days.
 
     console.log("period is ", period);
@@ -103,7 +116,7 @@ exports.getUserStatus = asyncHandler(async (req, res, next) => {
 // route: GET api/v1/users/getGender
 // access: private
 
-exports.getGender = asyncHandler(async (req, res, next) =>{
+exports.getGender = asyncHandler(async (req, res) =>{
     const usersSnapshot = await users.get();
     const usersData = usersSnapshot.docs.map(doc => doc.data().Gender.Gender);
 
