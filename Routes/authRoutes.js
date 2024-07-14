@@ -12,7 +12,7 @@ const router = express.Router();
 
 
 router.route('/signup').post(uploadImage, signup);
-router.route('/login').get(login);
+router.route('/login').post(login);
 router.route('/resetPassword').get(resetPassword);
 
 module.exports = router;
