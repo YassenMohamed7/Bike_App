@@ -58,7 +58,7 @@ exports.login = asyncHandler(async (req, res, next) => {
     const provided_data = req.body;
 
     try {
-        const userCredential = await signInWithEmailAndPassword(auth, provided_data.Email, provided_data.Password);
+        const userCredential = await signInWithEmailAndPassword(auth, provided_data.email, provided_data.password);
         const user = userCredential.user;
 
         const snapshot = await employees.doc(user.uid).get();
