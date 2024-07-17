@@ -18,7 +18,7 @@ exports.signup = asyncHandler(async (req, res, next) => {
         const userCredential = await createUserWithEmailAndPassword(auth, provided_data.email, provided_data.password);
         const user = userCredential.user;
     }catch (error){
-        res.status(401).json("Email already in use");
+        res.status(409).json("Email already in use");
     }
     const data = {
         Employee_Id: user.uid,
