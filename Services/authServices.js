@@ -13,19 +13,19 @@ const { createUserWithEmailAndPassword,
 
 exports.signup = asyncHandler(async (req, res, next) => {
     const provided_data = req.body;
-    const file = req.file;
+    const file = req.photo;
 
-    const userCredential = await createUserWithEmailAndPassword(auth, provided_data.Email, provided_data.Password);
+    const userCredential = await createUserWithEmailAndPassword(auth, provided_data.email, provided_data.password);
     const user = userCredential.user;
 
     const data = {
         Employee_Id: user.uid,
-        First_Name: provided_data.First_Name,
-        Last_Name: provided_data.Last_Name,
-        Job_Title: provided_data.Job_Title|| null,
-        Phone: provided_data.Phone,
-        Email: provided_data.Email,
-        Location: provided_data.Location || null,
+        First_Name: provided_data.first,
+        Last_Name: provided_data.last,
+        Job_Title: null,
+        Phone: provided_data.phone,
+        Email: provided_data.email,
+        Location: null,
         Completed_Services: {
             onTime: 0,
             delayed: 0
