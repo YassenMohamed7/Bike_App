@@ -14,10 +14,12 @@ const { createUserWithEmailAndPassword,
 exports.signup = asyncHandler(async (req, res, next) => {
     const provided_data = req.body;
     const file = req.photo;
-
-    const userCredential = await createUserWithEmailAndPassword(auth, provided_data.email, provided_data.password);
-    const user = userCredential.user;
-
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, provided_data.email, provided_data.password);
+        const user = userCredential.user;
+    }catch (error){
+        res.status(401).json("Email already in use");
+    }
     const data = {
         Employee_Id: user.uid,
         First_Name: provided_data.first,
