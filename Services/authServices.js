@@ -14,9 +14,10 @@ const { createUserWithEmailAndPassword,
 exports.signup = asyncHandler(async (req, res, next) => {
     const provided_data = req.body;
     const file = req.photo;
+    let user;
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, provided_data.email, provided_data.password);
-        const user = userCredential.user;
+         user = userCredential.user;
     }catch (error){
         res.status(409).json("Email already in use");
     }
