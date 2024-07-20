@@ -123,7 +123,7 @@ exports.getGender = asyncHandler(async (req, res) =>{
     const data = {
         male : usersData.filter(gender => gender[gender.length -1] === 0).length,
         female : usersData.filter(gender => gender[gender.length -1] === 1).length,
-        rather_not_to_say : usersData.filter(gender => gender[gender.length -1] === 2).length,
+        rather_not_to_say : usersData.filter(gender => gender.length === 0 || gender[gender.length -1] === 2).length,
     }
     res.status(200).json(data);
 })
