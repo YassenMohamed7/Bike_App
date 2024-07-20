@@ -16,8 +16,7 @@ exports.getUsers = asyncHandler(async (req, res) => {
     const limit = 10;
     let query;
 
-    console.log("active = "  +  active);
-    console.log("page = "  +  page);
+
     if(active === undefined)
         query  = users.orderBy('First_Login').limit(limit);
     else if(active === true)
@@ -98,7 +97,6 @@ exports.getTotal = asyncHandler(async (req, res)=>{
 exports.getUserStatus = asyncHandler(async (req, res) => {
     const period = req.body.period; // period should be in days.
 
-    console.log("period is ", period);
 
     const usersSnapshot = await users.get();
     const usersData = usersSnapshot.docs.map(doc => doc.data());
