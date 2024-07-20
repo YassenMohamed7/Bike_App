@@ -9,7 +9,8 @@ const decodeToken = (req, res, next) => {
     if(req.originalUrl.endsWith('login') || req.originalUrl.endsWith('signup') || req.originalUrl.endsWith('resetPassword')) {
         return next();
     }
-    const token = req.headers.authorization;
+    const token = req.headers.authorization.split(" ")[1];
+
     getAuth()
         .verifyIdToken(token)
         .then(async (decodedToken) => {
