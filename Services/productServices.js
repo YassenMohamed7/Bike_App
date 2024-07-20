@@ -71,6 +71,7 @@ exports.addProduct = asyncHandler(async (req, res, next) => {
 // access: private
 
 exports.getProducts = asyncHandler(async (req, res) => {
+    const {category, type} = req.body;
     const snapshot = await products.get();   // it returns a snapshot of the collection
     // docs is a list of objects each object is a document.
     const docs = snapshot.docs.map(doc => doc.data());
@@ -172,10 +173,27 @@ exports.editProduct = asyncHandler(async (req, res, next) => {
                 next(new apiError("internal server error", 500));
             }
 })
+// delete specific product
+// route: DELETE api/v1/products/delete/   id as a req.body
+// access: private
+
+
+exports.deleteProduct = asyncHandler(async (req, res, next) =>{
+    const id = req.body.id;
+    const docRef = products.doc(id);
+    docRef.delete().then(() =>{
+        res.status(202).json("product is deleted successfully");
+    }).catch(err =>{
+        next(new apiError('Error Deleting the product', 500));
+    });
+})
+
+
+
 
 
 // get total number of all existing products
-// route: POST api/v1/products/getTotalNumber
+// route: GET api/v1/products/getTotalNumber
 // access: private
 
 exports.getTotalNumber = asyncHandler(async (req, res) => {
