@@ -41,7 +41,7 @@ exports.addProduct = asyncHandler(async (req, res, next) => {
         }
     });
 
-    res.status(200).json('product is added succesfully');
+    res.status(200).json('product is added successfully');
 
 })
 
@@ -55,11 +55,36 @@ exports.addProduct = asyncHandler(async (req, res, next) => {
 
 exports.getProducts = asyncHandler(async (req, res) => {
     const data = [];
-    const page = req.params.page || 1;
+    const page = req.body.page || 1;
+    const status = req.body.status || null;
     const limit = 10;
     const startIndex = (page - 1) * limit;
 
-    const query = stock.orderBy('Date').startAt(startIndex).limit(limit);
+    let query;
+
+    if(status === undefined)
+        query = stock.orderBy('Date').limit(limit);
+    else if(status === "Low Stock")
+        query = stock
+            .where('Active', '==', "Low Stock")
+            .limit(limit);
+    else
+        query = stock
+            .where('Status', '==', "Out of Stock")
+            .limit(limit);
+
+    // If it's not the first page, get the last document from the previous page
+    if (page > 1) {
+        const previousPageSnapshot = await stock
+            .orderBy('Data')
+            .limit((page - 1) * limit)
+            .get();
+
+        const lastVisible = previousPageSnapshot.docs[previousPageSnapshot.docs.length - 1];
+        query = query.startAfter(lastVisible);
+    }
+
+
     const snapshot = await query.get();
     snapshot.forEach((doc) =>{
         const {Product_ID,  Product_Name ,Date , Amount, Price, Status, Product_Image} = doc.data() || {};
