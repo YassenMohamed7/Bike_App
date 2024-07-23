@@ -55,11 +55,16 @@ exports.addProduct = asyncHandler(async (req, res, next) => {
         } else {
             console.log("Image is: ", _imageUrl);
             data.Vehicle_Image = _imageUrl;
-            await products.doc(`${provided_data.Vehicle_Id}`).create(data);
+            try {
+                await products.doc(`${provided_data.Vehicle_Id}`).create(data);
+            }catch (e) {
+                return next(apiError("Product is already exists or internal server error", 500));
+            }
+            res.status(200).json(`product is added successfully.`);
         }
     });
 
-    res.status(200).json(`product is added successfully.`);
+
 })
 
 

@@ -37,11 +37,17 @@ exports.addProduct = asyncHandler(async (req, res, next) => {
             next(new apiError("Error Uploading Image", 500));
         } else {
             data.Product_Image = _imageUrl;
-            await stock.doc(`${provided_data.Product_ID}`).create(data);
+            try {
+                await stock.doc(`${provided_data.Product_ID}`).create(data);
+
+            }catch (e) {
+                 return next(new apiError("Product already exists or internal server error", 500));
+            }
+            res.status(200).json('product is added successfully');
         }
     });
 
-    res.status(200).json('product is added successfully');
+
 
 })
 
@@ -58,20 +64,21 @@ exports.getProducts = asyncHandler(async (req, res) => {
     const page = req.body.page || 1;
     const status = req.body.status || null;
     const limit = 10;
-    const startIndex = (page - 1) * limit;
 
     let query;
 
-    if(status === undefined)
+    if(status === null)
         query = stock.orderBy('Date').limit(limit);
-    else if(status === "Low Stock")
+    else if(status === "Low Stock") {
         query = stock
-            .where('Active', '==', "Low Stock")
+            .where('Status', '==', 'Low Stock')
             .limit(limit);
-    else
+    }
+    else {
         query = stock
-            .where('Status', '==', "Out of Stock")
+            .where('Status', '==', 'Out of Stock')
             .limit(limit);
+    }
 
     // If it's not the first page, get the last document from the previous page
     if (page > 1) {
