@@ -9,6 +9,9 @@ const decodeToken = (req, res, next) => {
     if(req.originalUrl.endsWith('login') || req.originalUrl.endsWith('signup') || req.originalUrl.endsWith('resetPassword')) {
         return next();
     }
+    if(!req.headers.authorization){
+        return next(new apiError("Invalid token, please login to access this route", 401));
+    }
     const token = req.headers.authorization.split(' ')[1];
 
     getAuth()
