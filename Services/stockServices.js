@@ -3,6 +3,7 @@ const asyncHandler = require('express-async-handler');
 const { Timestamp } = require('firebase-admin/firestore');
 const apiError = require('../Utils/apiError');
 const uploadImage = require('../Utils/uploadImageToBucket');
+const {log} = require("node:util");
 
 
 
@@ -22,7 +23,8 @@ exports.addProduct = asyncHandler(async (req, res, next) => {
             Tags: provided_data.Tags,     // can it be an array of strings?
             Type: provided_data.Type, // Bike, Scooter, …..
             Product_Image: null,
-            Date: Timestamp.now(),
+            Price: provided_data.Price,
+            Time: Timestamp.now(),
             Amount: provided_data.Amount,
             ID_Code: provided_data.ID_Code,
             Weight: provided_data.Weight,
@@ -67,8 +69,9 @@ exports.getProducts = asyncHandler(async (req, res) => {
 
     let query;
 
+
     if(status === null)
-        query = stock.orderBy('Date').limit(limit);
+        query = stock.orderBy('Time').limit(limit);
     else if(status === "Low Stock") {
         query = stock
             .where('Status', '==', 'Low Stock')
@@ -91,12 +94,22 @@ exports.getProducts = asyncHandler(async (req, res) => {
         query = query.startAfter(lastVisible);
     }
 
-
     const snapshot = await query.get();
     snapshot.forEach((doc) =>{
-        const {Product_ID,  Product_Name ,Date , Amount, Price, Status, Product_Image} = doc.data() || {};
+        const {Product_ID,  Product_Name ,Time = {} , Amount, Price, Status, Product_Image} = doc.data() || {};
 
-        data.push({Product_ID,  Product_Name ,Date , Amount, Price, Status, Product_Image });
+        const _Time = (Time._seconds + Time._nanoseconds*10**-9)*1000;
+        console.log(_Time)
+        const date = new Date(_Time);
+        const time = date.toLocaleString('en-GB', {
+        day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+    });
+        console.log("Time is " + time) ;
+
+        
+        data.push({Product_ID,  Product_Name ,time , Amount, Price, Status, Product_Image });
     })
     res.status(200).json(data);
 })
