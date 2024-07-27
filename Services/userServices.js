@@ -95,7 +95,7 @@ exports.getTotal = asyncHandler(async (req, res)=>{
 // access: private
 
 exports.getUserStatus = asyncHandler(async (req, res) => {
-    const period = req.params.period; // period should be in days.
+    const period = req.body.period; // period should be in days.
 
 
     const usersSnapshot = await users.get();
