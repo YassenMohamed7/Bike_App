@@ -19,10 +19,10 @@ router.route('/totalUsers').get(getTotal);
 // @used in overview to display status of users
 
 router.route('/getUserStatus/:period').get(getUserStatus);
+router.route('/getGenderOfAllUsers/:period').get(getGender);
 
 
 router.route('/getSpecificUser/:Customer_Id').get(getSpecificUser);
-router.route('/getGenderOfAllUsers').get(getGender);
 
 
 module.exports = router;

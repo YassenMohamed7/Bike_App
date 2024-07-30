@@ -97,8 +97,6 @@ exports.getTotal = asyncHandler(async (req, res)=>{
 exports.getUserStatus = asyncHandler(async (req, res) => {
     const period = req.params.period; // period should be in days.
 
-
-
     const usersSnapshot = await users.get();
     const usersData = usersSnapshot.docs.map(doc => doc.data());
     const stats = {
@@ -115,15 +113,37 @@ exports.getUserStatus = asyncHandler(async (req, res) => {
 // route: GET api/v1/users/getGender
 // access: private
 
-exports.getGender = asyncHandler(async (req, res) =>{
-    const usersSnapshot = await users.get();
-    const usersData = usersSnapshot.docs.map(doc => doc.data().Gender.Gender);
 
-    const data = {
-        male : usersData.filter(gender => gender[gender.length -1] === 0).length,
-        female : usersData.filter(gender => gender[gender.length -1] === 1).length,
-        rather_not_to_say : usersData.filter(gender => gender.length === 0 || gender[gender.length -1] === 2).length,
+exports.getGender = asyncHandler(async (req, res) => {
+    const period = parseInt(req.params.period, 10); // Ensure period is a number
+
+    if (isNaN(period)) {
+        return res.status(400).json({ message: 'Invalid period parameter' });
     }
-    res.status(200).json(data);
-})
+
+    try {
+        const usersSnapshot = await users.get();
+        const usersData = usersSnapshot.docs.map(doc => doc.data());
+
+        // Filter users based on the period
+        const recentUsers = usersData.filter(user => {
+            return calculateDateDiff(Timestamp.now(), user.First_Login) <= period;
+        });
+
+        const filtered = recentUsers.map(user => user.Gender.Gender);
+        console.log(filtered);
+
+        // Count genders
+        const data = {
+            rather_not_to_say : filtered.filter(gender => gender.length === 0 || gender[gender.length -1] === 2).length,
+            male : filtered.filter(gender => gender[gender.length -1] === 0).length,
+            female : filtered.filter(gender => gender[gender.length -1] === 1).length
+        }
+
+        res.status(200).json(data);
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 
