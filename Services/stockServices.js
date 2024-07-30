@@ -63,14 +63,13 @@ exports.addProduct = asyncHandler(async (req, res, next) => {
 
 exports.getProducts = asyncHandler(async (req, res) => {
     const data = [];
-    const page = req.body.page || 1;
-    const status = req.body.status || null;
+    const page = req.params.page || 1;
+    const status = req.params.status || null;
     const limit = 10;
 
     let query;
 
-
-    if(status === null)
+    if(status === null || status==="all")
         query = stock.orderBy('Time').limit(limit);
     else if(status === "Low Stock") {
         query = stock
@@ -86,7 +85,7 @@ exports.getProducts = asyncHandler(async (req, res) => {
     // If it's not the first page, get the last document from the previous page
     if (page > 1) {
         const previousPageSnapshot = await stock
-            .orderBy('Data')
+            .orderBy('Time')
             .limit((page - 1) * limit)
             .get();
 
@@ -99,17 +98,15 @@ exports.getProducts = asyncHandler(async (req, res) => {
         const {Product_ID,  Product_Name ,Time = {} , Amount, Price, Status, Product_Image} = doc.data() || {};
 
         const _Time = (Time._seconds + Time._nanoseconds*10**-9)*1000;
-        console.log(_Time)
         const date = new Date(_Time);
         const time = date.toLocaleString('en-GB', {
         day: '2-digit',
             month: 'long',
             year: 'numeric'
     });
-        console.log("Time is " + time) ;
 
         
-        data.push({Product_ID,  Product_Name ,time , Amount, Price, Status, Product_Image });
+        data.push({Product_ID,  Product_Name ,Time: time , Amount, Price, Status, Product_Image });
     })
     res.status(200).json(data);
 })
