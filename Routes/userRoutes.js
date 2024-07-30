@@ -18,7 +18,7 @@ router.route('/totalUsers').get(getTotal);
 
 // @used in overview to display status of users
 
-router.route('/getUserStatus').get(getUserStatus);
+router.route('/getUserStatus/:period').get(getUserStatus);
 
 
 router.route('/getSpecificUser/:Customer_Id').get(getSpecificUser);
