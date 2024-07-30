@@ -53,7 +53,6 @@ exports.addProduct = asyncHandler(async (req, res, next) => {
         if (err) {
             next(new apiError("Error Uploading Image", 500));
         } else {
-            console.log("Image is: ", _imageUrl);
             data.Vehicle_Image = _imageUrl;
             try {
                 await products.doc(`${provided_data.Vehicle_Id}`).create(data);
@@ -76,11 +75,29 @@ exports.addProduct = asyncHandler(async (req, res, next) => {
 // access: private
 
 exports.getProducts = asyncHandler(async (req, res) => {
-    const {category, type} = req.body;
-    const snapshot = await products.get();   // it returns a snapshot of the collection
-    // docs is a list of objects each object is a document.
+    const {category, type, page = 1} = req.body;
+    const limit = 10;
+
+    let query = products.limit(limit);
+    if(category !== undefined)
+        query = query.where('Vehicle_Category', '==', category).limit(limit);
+    if(type !== undefined)
+        query = query.where('Vehicle_Type', '==', type).limit(limit);
+
+
+    if (page > 1) {
+        const previousPageSnapshot = await products
+            .orderBy('Register_Date')
+            .limit((page - 1) * limit)
+            .get();
+
+        const lastVisible = previousPageSnapshot.docs[previousPageSnapshot.docs.length - 1];
+        query = query.startAfter(lastVisible);
+    }
+
+    const snapshot = await query.get();
     const docs = snapshot.docs.map(doc => doc.data());
-    res.status(200).json(docs);
+    res.status(200).json({length: docs.length, date: docs});
 })
 
 
