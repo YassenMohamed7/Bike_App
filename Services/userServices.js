@@ -98,6 +98,7 @@ exports.getUserStatus = asyncHandler(async (req, res) => {
     const period = req.params.period; // period should be in days.
 
 
+
     const usersSnapshot = await users.get();
     const usersData = usersSnapshot.docs.map(doc => doc.data());
     const stats = {
