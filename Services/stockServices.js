@@ -69,7 +69,7 @@ exports.getProducts = asyncHandler(async (req, res) => {
 
     let query;
 
-    if(status === null || status==="all")
+    if(status === null || status==="All products")
         query = stock.orderBy('Time').limit(limit);
     else if(status === "Low Stock") {
         query = stock

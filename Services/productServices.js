@@ -219,6 +219,8 @@ exports.deleteProduct = asyncHandler(async (req, res, next) =>{
 // access: private
 
 exports.getTotalNumber = asyncHandler(async (req, res) => {
+   const filter = req.params.status;
+
     const productsSnapshot = await products.get();
     const totalProducts = productsSnapshot.size;
     res.json({ totalProducts });
