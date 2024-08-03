@@ -65,7 +65,7 @@ exports.getProducts = asyncHandler(async (req, res) => {
     const data = [];
     const page = req.params.page || 1;
     const status = req.params.status || null;
-    const limit = 2;
+    const limit = 8;
 
     let query = stock.orderBy('Time');
 
