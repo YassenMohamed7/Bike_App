@@ -65,27 +65,24 @@ exports.getProducts = asyncHandler(async (req, res) => {
     const data = [];
     const page = req.params.page || 1;
     const status = req.params.status || null;
-    const limit = 10;
+    const limit = 2;
 
-    let query;
+    let query = stock.orderBy('Time');
 
-    if(status === null || status==="All products")
-        query = stock.orderBy('Time').limit(limit);
-    else if(status === "Low Stock") {
-        query = stock
-            .where('Status', '==', 'Low Stock')
-            .limit(limit);
+    if(status === "Low Stock") {
+        query = query
+            .where('Status', '==', 'Low Stock');
     }
-    else {
-        query = stock
-            .where('Status', '==', 'Out of Stock')
-            .limit(limit);
+    else if(status === 'Out of Stock'){
+        query = query
+            .where('Status', '==', 'Out of Stock');
     }
 
     // If it's not the first page, get the last document from the previous page
     if (page > 1) {
         const previousPageSnapshot = await stock
             .orderBy('Time')
+            .where('Status', '==', status)
             .limit((page - 1) * limit)
             .get();
 
@@ -93,7 +90,7 @@ exports.getProducts = asyncHandler(async (req, res) => {
         query = query.startAfter(lastVisible);
     }
 
-    const snapshot = await query.get();
+    const snapshot = await query.limit(limit).get();
     snapshot.forEach((doc) =>{
         const {Product_ID,  Product_Name ,Time = {} , Amount, Price, Status, Product_Image} = doc.data() || {};
 
