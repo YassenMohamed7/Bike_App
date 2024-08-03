@@ -78,15 +78,21 @@ exports.getProducts = asyncHandler(async (req, res) => {
             .where('Status', '==', 'Out of Stock');
     }
 
+
     // If it's not the first page, get the last document from the previous page
     if (page > 1) {
-        const previousPageSnapshot = await stock
-            .orderBy('Time')
-            .where('Status', '==', status)
-            .limit((page - 1) * limit)
-            .get();
 
-        const lastVisible = previousPageSnapshot.docs[previousPageSnapshot.docs.length - 1];
+        let previousPageSnapshot =  stock
+            .orderBy('Time')
+
+        if(status === 'Low Stock' || status === 'Out of Stock')
+            previousPageSnapshot = previousPageSnapshot.where('Status', '==', status)
+
+        previousPageSnapshot = previousPageSnapshot.limit((page - 1) * limit)
+
+        const getPreviousPageSnapshot = await  previousPageSnapshot.get();
+
+        const lastVisible = getPreviousPageSnapshot.docs[getPreviousPageSnapshot.docs.length - 1];
         query = query.startAfter(lastVisible);
     }
 
