@@ -183,3 +183,21 @@ exports.deleteProduct = asyncHandler(async (req, res, next) =>{
        next(new apiError('Error Deleting the product', 500));
     });
 })
+
+exports.getNumber = asyncHandler(async (req, res, next) =>{
+    const status = req.params.status;
+
+    let query = stock;
+    if(status === 'Low Stock' || status === 'Out of Stock')
+    query = stock
+        .where('Status', '==', status);
+
+    const data = await query.get();
+    const numberOfProducts = data.docs.map(doc => doc.data()).length;
+
+    res.status(200).json({
+        total_products: numberOfProducts
+    });
+
+
+})

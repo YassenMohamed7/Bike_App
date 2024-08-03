@@ -3,7 +3,8 @@ const { getProducts,
     addProduct,
     getSpecificProduct,
     editProduct,
-    deleteProduct
+    deleteProduct,
+    getNumber
 } = require('../Services/stockServices');
 
 const {uploadImage} = require('../Utils/uploadImage');
@@ -16,5 +17,6 @@ router.route('/getProducts/:page/:status').get(getProducts);
 router.route('/getSpecificProduct/:id').get(getSpecificProduct);
 router.route('/editProduct').put(uploadImage, editProduct);
 router.route('/deleteProduct/:id').delete(deleteProduct);
+router.route('/getNumber/:status').get(getNumber);
 
 module.exports = router;
