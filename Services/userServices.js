@@ -98,13 +98,13 @@ exports.getUserStatus = asyncHandler(async (req, res) => {
 
     const usersSnapshot = await users.get();
     const usersData = usersSnapshot.docs.map(doc => doc.data());
-    const stats = {
+    const status = {
         active: usersData.filter(usersData => usersData.Active === true).length,
         new: usersData.filter(usersData => calculateDateDiff(Timestamp.now(), usersData.First_Login) <= period).length,
         inactive: usersData.filter(usersData => usersData.Active === false).length,
         deleted: usersData.filter(usersData => usersData.Delete_Account === true).length,
     };
-    res.json(stats);
+    res.status(200).json(status);
 })
 
 
