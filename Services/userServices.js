@@ -12,7 +12,7 @@ exports.getUsers = asyncHandler(async (req, res) => {
     const data = [];
     const page = parseInt(req.params.page) || 1;
     const active = req.params.active;
-    const limit = 6;
+    const limit = 8;
 
     let query = users.orderBy('First_Login')
 
