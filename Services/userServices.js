@@ -8,52 +8,51 @@ const calculateDateDiff = require('../Utils/calculateDateDiff');
 // get all Users data
 // route: GET api/v1/users?page=...&active=...
 // access: private
-
 exports.getUsers = asyncHandler(async (req, res) => {
     const data = [];
-    const page = parseInt(req.body.page) || 1;
-    const active = req.body.active;
-    const limit = 10;
-    let query;
+    const page = parseInt(req.params.page) || 1;
+    const active = req.params.active;
+    const limit = 6;
 
+    let query = users.orderBy('First_Login')
 
-    if(active === undefined)
-        query  = users.orderBy('First_Login').limit(limit);
-    else if(active === true)
-        query = users
-            .where('Active', '==', true)
-            .limit(limit);
-    else
-        query = users
-            .where('Active', '==', false)
-            .limit(limit);
+    if(active === 'true'){
+        query = query.where('Active', '==', true);
+    }else if (active === 'false'){
+        query = query.where('Active', '==', false);
+    }
 
-    // If it's not the first page, get the last document from the previous page
     if (page > 1) {
-        const previousPageSnapshot = await users
-            .orderBy('First_Login')
-            .limit((page - 1) * limit)
-            .get();
 
-        const lastVisible = previousPageSnapshot.docs[previousPageSnapshot.docs.length - 1];
+        let previousPageSnapshot =  users.orderBy('First_Login')
+
+        if(active === 'true')
+            previousPageSnapshot = previousPageSnapshot.where('Active', '==', true)
+        else if(active === 'false')
+            previousPageSnapshot = previousPageSnapshot.where('Active', '==', false)
+
+
+        previousPageSnapshot = previousPageSnapshot.limit((page - 1) * limit)
+
+        const getPreviousPageSnapshot = await  previousPageSnapshot.get();
+
+        const lastVisible = getPreviousPageSnapshot.docs[getPreviousPageSnapshot.docs.length - 1];
         query = query.startAfter(lastVisible);
     }
 
-    const snapshot = await query.get();
+    const snapshot = await query.limit(limit).get();
     snapshot.forEach((doc) => {
         const { Customer_Id, First_Name = {}, Last_Name = {}, Balance, Active, Orders = 0 } = doc.data() || {};
-        const First = First_Name["First Name"];
-        const Last = Last_Name["Last_Name"];
-        const FirstName = First[First.length - 1];
-        const LastName = Last[Last.length - 1];
+        const First = First_Name["First Name"] || [];
+        const Last = Last_Name["Last_Name"] || [];
+        const FirstName = First[First.length - 1] || '';
+        const LastName = Last[Last.length - 1] || '';
 
         data.push({ Customer_Id, FirstName, LastName, Balance, Active, Orders });
     });
 
-    res.status(200).json(data);
+    res.status(200).json({ length: data.length, data });
 });
-
-
 
 
 // get specific User data
