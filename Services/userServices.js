@@ -42,16 +42,44 @@ exports.getUsers = asyncHandler(async (req, res) => {
 
     const snapshot = await query.limit(limit).get();
     snapshot.forEach((doc) => {
-        const { Customer_Id, First_Name = {}, Last_Name = {}, Balance, Active, Orders = 0 } = doc.data() || {};
+        const { Customer_Id, Email ,First_Name = {}, Last_Name = {}, Phone = {} ,Balance, Location = {} , Active, Orders = 0 , Image, Last_Login} = doc.data() || {};
         const First = First_Name["First Name"] || [];
         const Last = Last_Name["Last_Name"] || [];
         const FirstName = First[First.length - 1] || '';
         const LastName = Last[Last.length - 1] || '';
+        const name = FirstName + " " + LastName;
+        const address = Location['City'] + ',' + Location['State'] + ',' + Location['Country'];
+        const phoneList = Phone['Phone'];
+        const phone = phoneList[phoneList.length -1];
+        const _Time = (Last_Login._seconds + Last_Login._nanoseconds*10**-9)*1000;
+        const date = new Date(_Time);
+        const lastOnline = date.toLocaleString('en-GB', {
+            day: '2-digit',
+            month: "2-digit",
+            year: 'numeric'
+        }).replace(/\//g, '-');
+        let status = "active";
+        if (Active === false)
+            status = "blocked";
 
-        data.push({ Customer_Id, FirstName, LastName, Balance, Active, Orders });
+
+
+        data.push({
+            id: Customer_Id,
+            img: Image,
+            name: name,
+            status: status,
+            orders: Orders,
+            balance: Balance,
+            email: Email,
+            address: address,
+            phone: phone,
+            lastOnline: lastOnline
+
+        });
     });
 
-    res.status(200).json({ length: data.length, data });
+    res.status(200).json( data );
 });
 
 
