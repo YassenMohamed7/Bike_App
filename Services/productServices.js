@@ -75,23 +75,36 @@ exports.addProduct = asyncHandler(async (req, res, next) => {
 // access: private
 
 exports.getProducts = asyncHandler(async (req, res) => {
-    const {category, type, page = 1} = req.body;
-    const limit = 10;
+    const category = req.params.category;
+    const type = req.params.type;
+    const page = parseInt(req.params.page) || 1;
+    const limit = 8;
 
-    let query = products.limit(limit);
-    if(category !== undefined)
+    console.log("category is: " + category);
+    console.log("type is: " + type);
+    console.log("page is: " + page);
+
+    let query = products.orderBy('Register_Date');
+    if(category !== 'none')
         query = query.where('Vehicle_Category', '==', category).limit(limit);
-    if(type !== undefined)
+    if(type !== 'none')
         query = query.where('Vehicle_Type', '==', type).limit(limit);
 
 
     if (page > 1) {
-        const previousPageSnapshot = await products
-            .orderBy('Register_Date')
-            .limit((page - 1) * limit)
-            .get();
+        let previousPageSnapshot =  products.orderBy('Register_Date');
 
-        const lastVisible = previousPageSnapshot.docs[previousPageSnapshot.docs.length - 1];
+        if(category !== 'none'){
+            previousPageSnapshot = previousPageSnapshot.where('Vehicle_Category', '==', category);
+        }
+        if(type !== 'none'){
+            previousPageSnapshot = previousPageSnapshot.where('Vehicle_Type', '==', type);
+        }
+        previousPageSnapshot = previousPageSnapshot.limit((page - 1) * limit)
+
+        const prevDate = await previousPageSnapshot.get()
+
+        const lastVisible = prevDate.docs[prevDate.docs.length - 1];
         query = query.startAfter(lastVisible);
     }
 
