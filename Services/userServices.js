@@ -16,9 +16,9 @@ exports.getUsers = asyncHandler(async (req, res) => {
 
     let query = users.orderBy('First_Login')
 
-    if(active === 'true'){
+    if(active === 'Active'){
         query = query.where('Active', '==', true);
-    }else if (active === 'false'){
+    }else if (active === 'Blocked'){
         query = query.where('Active', '==', false);
     }
 
