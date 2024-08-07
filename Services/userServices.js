@@ -9,38 +9,43 @@ const calculateDateDiff = require('../Utils/calculateDateDiff');
 // route: GET api/v1/users?page=...&active=...
 // access: private
 exports.getUsers = asyncHandler(async (req, res) => {
+    // this is the parameters required t do a pagination
+    // const page = parseInt(req.params.page) || 1;
+    // const limit = 8;
+
     const data = [];
-    const page = parseInt(req.params.page) || 1;
-    const active = req.params.active;
-    const limit = 8;
+    const active = req.params.active;  // active is a parameter with values 'Active' or 'Blocked' to classify the users
 
     let query = users.orderBy('First_Login')
-
     if(active === 'Active'){
         query = query.where('Active', '==', true);
     }else if (active === 'Blocked'){
         query = query.where('Active', '==', false);
     }
 
-    if (page > 1) {
+    // Pagination
+    // if (page > 1) {
+    //
+    //     let previousPageSnapshot =  users.orderBy('First_Login')
+    //
+    //     if(active === 'true')
+    //         previousPageSnapshot = previousPageSnapshot.where('Active', '==', true)
+    //     else if(active === 'false')
+    //         previousPageSnapshot = previousPageSnapshot.where('Active', '==', false)
+    //
+    //
+    //     previousPageSnapshot = previousPageSnapshot.limit((page - 1) * limit)
+    //
+    //     const getPreviousPageSnapshot = await  previousPageSnapshot.get();
+    //
+    //     const lastVisible = getPreviousPageSnapshot.docs[getPreviousPageSnapshot.docs.length - 1];
+    //     query = query.startAfter(lastVisible);
+    // }
 
-        let previousPageSnapshot =  users.orderBy('First_Login')
+    // if we want to do the pagination  add .limit(limit) to the query
+    // const snapshot = await query.limit(limit).get();
 
-        if(active === 'true')
-            previousPageSnapshot = previousPageSnapshot.where('Active', '==', true)
-        else if(active === 'false')
-            previousPageSnapshot = previousPageSnapshot.where('Active', '==', false)
-
-
-        previousPageSnapshot = previousPageSnapshot.limit((page - 1) * limit)
-
-        const getPreviousPageSnapshot = await  previousPageSnapshot.get();
-
-        const lastVisible = getPreviousPageSnapshot.docs[getPreviousPageSnapshot.docs.length - 1];
-        query = query.startAfter(lastVisible);
-    }
-
-    const snapshot = await query.limit(limit).get();
+    const snapshot = await query.get();
     snapshot.forEach((doc) => {
         const { Customer_Id, Email ,First_Name = {}, Last_Name = {}, Phone = {} ,Balance, Location = {} , Active, Orders = 0 , Image, Last_Login} = doc.data() || {};
         const First = First_Name["First Name"] || [];
