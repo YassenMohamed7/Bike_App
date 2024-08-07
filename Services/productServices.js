@@ -80,9 +80,6 @@ exports.getProducts = asyncHandler(async (req, res) => {
     const page = parseInt(req.params.page) || 1;
     const limit = 8;
 
-    console.log("category is: " + category);
-    console.log("type is: " + type);
-    console.log("page is: " + page);
 
     let query = products.orderBy('Register_Date');
     if(category !== 'none')
