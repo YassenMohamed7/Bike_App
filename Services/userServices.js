@@ -9,9 +9,7 @@ const calculateDateDiff = require('../Utils/calculateDateDiff');
 // route: GET api/v1/users?page=...&active=...
 // access: private
 exports.getUsers = asyncHandler(async (req, res) => {
-    // this is the parameters required t do a pagination
-    // const page = parseInt(req.params.page) || 1;
-    // const limit = 8;
+
 
     const data = [];
     const active = req.params.active;  // active is a parameter with values 'Active' or 'Blocked' to classify the users
