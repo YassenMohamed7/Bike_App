@@ -107,8 +107,8 @@ const sendPasswordResetEmail = async (email, link) => {
     const transporter = nodemailer.createTransport({
         service: 'Gmail',
         auth: {
-            user: 'yassenmohammed871@gmail.com',
-            pass: 'Yassen_Mohamed123#'
+            user: 'test@gmail.com',
+            pass: ''
         }
     });
 
